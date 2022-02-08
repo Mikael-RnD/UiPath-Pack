@@ -1,16 +1,23 @@
-name: 'Setup UiPath CLI'
-description: 'Setup the UiPath CLI on the runner'
+name: 'UiPath Pack'
+description: 'Analyzes and packs all UiPath projects within the repository it runs in. Analyze uses UiPath Workflow Analyzer and will cause the job to stop on Rule Violationes.'
 
 runs:
   using: "composite"
   steps:
+    - run: echo ${{ github.action_path }}
+      shell: bash
     - name: Setup CLI
       shell: pwsh
-      run: ${{ github.action_path }}/setup-uipath-cli.ps1
-      #       New-Item -Path "C:\\" -ItemType "directory" -Name "uipathcli";
-      #       Invoke-WebRequest "https://www.myget.org/F/uipath-dev/api/v2/package/UiPath.CLI/1.0.7985.19721" -OutFile "C:\\uipathcli\\cli.zip";
-      #       Expand-Archive -LiteralPath "C:\\uipathcli\\cli.Zip" -DestinationPath "C:\\uipathcli";
+      run:  ${{ github.action_path }}/setup-uipath-cli.ps1
       
     - name: Analyze
       shell: pwsh
-      run: ${{ github.action_path }}/pack-and-analyze-uipath-projects.ps1 ${{ github.workspace }}
+      run: ${{ github.action_path }}/analyze-uipath-projects.ps1 ${{ gitgub.workspace }}
+      
+    - name: Pack
+      shell: pwsh
+      run: ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ gitgub.workspace }}
+
+    - uses: actions/upload-artifact@v2
+      with:
+        path: ${{ github.workspace }}/output
