@@ -16,7 +16,3 @@ runs:
       shell: pwsh
       run: |
         ${{ github.action_path }}/pack-and-analyze-uipath-projects.ps1
-        # foreach($package in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
-        #   {
-        #     & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$package" --analyzerTraceLevel "Warning" --stopOnRuleViolation
-        #   }
