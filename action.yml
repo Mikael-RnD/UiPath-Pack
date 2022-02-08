@@ -12,11 +12,11 @@ runs:
       
     - name: Analyze
       shell: pwsh
-      run: ${{ github.action_path }}/analyze-uipath-projects.ps1 ${{ gitgub.workspace }}
+      run: ${{ github.action_path }}/analyze-uipath-projects.ps1 ${{ github.workspace }}
       
     - name: Pack
       shell: pwsh
-      run: ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ gitgub.workspace }}
+      run: ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ github.workspace }}
 
     - uses: actions/upload-artifact@v2
       with:
