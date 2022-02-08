@@ -15,4 +15,4 @@ runs:
     - name: Analyze
       shell: pwsh
       run: |
-        ${{ github.action_path }}/pack-and-analyze-uipath-projects.ps1
+        ${{ github.action_path }}/pack-and-analyze-uipath-projects.ps1 ${{ github.workspace }}
