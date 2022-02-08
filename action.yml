@@ -6,13 +6,11 @@ runs:
   steps:
     - name: Setup CLI
       shell: pwsh
-      run: |
-        ${{ github.action_path }}/setup-uipath-cli.ps1
+      run: ${{ github.action_path }}/setup-uipath-cli.ps1
       #       New-Item -Path "C:\\" -ItemType "directory" -Name "uipathcli";
       #       Invoke-WebRequest "https://www.myget.org/F/uipath-dev/api/v2/package/UiPath.CLI/1.0.7985.19721" -OutFile "C:\\uipathcli\\cli.zip";
       #       Expand-Archive -LiteralPath "C:\\uipathcli\\cli.Zip" -DestinationPath "C:\\uipathcli";
       
     - name: Analyze
       shell: pwsh
-      run: |
-        ${{ github.action_path }}/pack-and-analyze-uipath-projects.ps1 ${{ github.workspace }}
+      run: ${{ github.action_path }}/pack-and-analyze-uipath-projects.ps1 ${{ github.workspace }}
