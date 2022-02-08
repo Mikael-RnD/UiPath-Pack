@@ -17,9 +17,3 @@ runs:
     - name: Pack
       shell: pwsh
       run: ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ github.workspace }}
-
-    - uses: actions/upload-artifact@v2
-      with:
-        path: ${{ github.workspace }}/output
-        if-no-files-found: error
-        retention-days: 1
