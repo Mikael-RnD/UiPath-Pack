@@ -4,8 +4,6 @@ description: 'Analyzes and packs all UiPath projects within the repository it ru
 runs:
   using: "composite"
   steps:
-    - run: echo ${{ github.action_path }}
-      shell: bash
     - name: Setup CLI
       shell: pwsh
       run:  ${{ github.action_path }}/setup-uipath-cli.ps1
