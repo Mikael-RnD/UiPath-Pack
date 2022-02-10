@@ -6,7 +6,7 @@ runs:
   steps:
     - name: Analyze
       shell: pws
-      run: ${{ github.action_path }}/analyze-uipath-projects.ps1 ${{ github.workspace }} "www.www.www"
+      run: ${{ github.action_path }}/analyze-uipath-projects.ps1 ${{ github.workspace }}
       
     - name: Pack
       shell: pwsh
