@@ -5,13 +5,8 @@ runs:
   using: "composite"
   steps:
     - name: Analyze
-      shell: pwsh
-      run: |
-        foreach($project in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
-        {
-          & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$project" --analyzerTraceLevel "Warning" --stopOnRuleViolation
-        }
-      # run: ${{ github.action_path }}/analyze-uipath-projects.ps1 ${{ github.workspace }}
+      shell: pws
+      run: ${{ github.action_path }}/analyze-uipath-projects.ps1 ${{ github.workspace }}
       
     - name: Pack
       shell: pwsh
