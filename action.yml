@@ -10,7 +10,7 @@ inputs:
   orchestratorFolder:
     description: 'Folder path in modern folder setup'
     required: true
-  orchestratorAccount:
+  orchestratorUsername:
     description: 'Account for authenticating to Orchestrator'
     required: true
   orchestratorPassword:
@@ -25,7 +25,7 @@ runs:
       run: |
         foreach($project in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
           {
-            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$project" --analyzerTraceLevel "Warning" --stopOnRuleViolation --orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} --orchestratorUsername ${{ inputs.orchestratorUser }} --orchestratorPassword ${{ inputs.orchestratorPassword }} --orchestratorFolder ${{ inputs.orchestratorFolder }}
+            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$project" --analyzerTraceLevel "Warning" --stopOnRuleViolation --orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} --orchestratorUsername ${{ inputs.orchestratorUsername }} --orchestratorPassword ${{ inputs.orchestratorPassword }} --orchestratorFolder ${{ inputs.orchestratorFolder }}
           }
       
     - name: Pack
