@@ -1,12 +1,32 @@
 name: 'UiPath Pack'
 description: 'Analyzes and packs all UiPath projects within the repository it runs in. Analyze uses UiPath Workflow Analyzer and will cause the job to stop on Rule Violationes.'
+inputs:
+  orchestratorUrl: 
+    description: 'Orchestrator instance URL'
+    required: true
+  orchestratorTenant:
+    description: 'Tenant on the Orchestrator instance'
+    required: true
+  orchestratorFolder:
+    description: 'Folder path in modern folder setup'
+    required: true
+  orchestratorUsername:
+    description: 'Account for authenticating to Orchestrator'
+    required: true
+  orchestratorPassword:
+    description: 'Password for the Orchestrator account'
+    required: true
 
 runs:
   using: "composite"
   steps:
     - name: Analyze
       shell: pwsh
-      run: ${{ github.action_path }}/analyze-uipath-projects.ps1 ${{ github.workspace }} "www.cloud.uipath.com" "default"
+      run: |
+        foreach($project in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
+          {
+            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$project" --analyzerTraceLevel "Warning" --stopOnRuleViolation --orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} --orchestratorUsername ${{ inputs.orchestratorUsername }} --orchestratorPassword ${{ inputs.orchestratorPassword }} --orchestratorFolder ${{ inputs.orchestratorFolder }}
+          }
       
     - name: Pack
       shell: pwsh
