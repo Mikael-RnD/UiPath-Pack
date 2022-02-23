@@ -38,7 +38,7 @@ jobs:
       - uses: Mikael-RnD/UiPath-Setup@main
       
       # Run workflow analysis on and pack UiPath projects
-      - uses: Mikael-RnD/UiPath-Pack-Analyze@main
+      - uses: ./
         with:
           orchestratorUrl: ${{ env.ORCHESTRATOR_URL }}
           orchestratorTenant: ${{ env.ORCHESTRATOR_TENANT }}
