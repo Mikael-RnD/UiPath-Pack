@@ -23,10 +23,18 @@ runs:
     - name: Analyze
       shell: pwsh
       run: |
-        foreach($project in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
-          {
-            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$($project.FullName)" --analyzerTraceLevel "Warning" --stopOnRuleViolation --orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} --orchestratorUsername ${{ inputs.orchestratorUsername }} --orchestratorPassword ${{ inputs.orchestratorPassword }} --orchestratorFolder ${{ inputs.orchestratorFolder }}
-          }
+        $projectList = Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File
+        if($projectList.Count -gt 0)
+        {
+          foreach($project in $projectList)
+            {
+              & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$($project.FullName)" --analyzerTraceLevel "Warning" --stopOnRuleViolation --orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} --orchestratorUsername ${{ inputs.orchestratorUsername }} --orchestratorPassword ${{ inputs.orchestratorPassword }} --orchestratorFolder ${{ inputs.orchestratorFolder }}
+            }
+        }
+        else
+        {
+          return -1
+        }
       
     - name: Pack
       shell: pwsh
