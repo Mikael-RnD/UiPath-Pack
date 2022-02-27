@@ -28,7 +28,7 @@ runs:
         {
         foreach($project in $projectList)
           {
-            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$($project.FullName)" –stopOnRuleViolation –orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} –orchestratorUsername ${{ inputs.orchestratorUsername }} --orchestratorPassword ${{ inputs.orchestratorPassword }} –orchestratorFolder ${{ inputs.orchestratorFolder }}
+            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$($project.FullName)" –-stopOnRuleViolation -–orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} –-orchestratorUsername ${{ inputs.orchestratorUsername }} --orchestratorPassword ${{ inputs.orchestratorPassword }} –-orchestratorFolder ${{ inputs.orchestratorFolder }}
           }
         }
         else
