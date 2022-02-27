@@ -26,10 +26,10 @@ runs:
         $projectList = Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File
         if($projectList.Count -gt 0)
         {
-          foreach($project in $projectList)
-            {
-              & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$($project.FullName)" --ignoredRules ST-SEC-008 --stopOnRuleViolation --orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} --orchestratorUsername ${{ inputs.orchestratorUsername }} --orchestratorPassword ${{ inputs.orchestratorPassword }} --orchestratorFolder ${{ inputs.orchestratorFolder }}
-            }
+        foreach($project in $projectList)
+          {
+            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$($project.FullName)" –analyzerTraceLevel Warning –stopOnRuleViolation –orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} –orchestratorUsername ${{ inputs.orchestratorUsername }} --orchestratorPassword ${{ inputs.orchestratorPassword }} –orchestratorFolder ${{ inputs.orchestratorFolder }}
+          }
         }
         else
         {
