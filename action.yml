@@ -47,15 +47,17 @@ runs:
 
         foreach($project in Get-ChildItem -Path ${{ github.workspace }}] -Recurse -Filter project.json -File)
         {
+          Write-Host "Looping"
           & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --autoVersion -l en-US
-          if([string]::IsNullOrEmpty(${{ inputs.projectVersion }}))
-          {
-            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --autoVersion -l en-US
-          }
-          else
-          {
-            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --version ${{ inputs.projectVersion }} -l en-US
-          }
+          #if([string]::IsNullOrEmpty(${{ inputs.projectVersion }}))
+          #{
+          #  & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --autoVersion -l en-US
+          #}
+          #else
+          #{
+          
+          #  & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --version ${{ inputs.projectVersion }} -l en-US
+          # }
 
           # Add authentication here
 
