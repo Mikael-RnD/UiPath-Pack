@@ -49,18 +49,18 @@ runs:
         if([string]::IsNullOrEmpty($projectVersion))
         {
           Write-Host "Auto-versioning"
-          $versioningArg = --autoVersion
+          $versioningArg = "--autoVersion"
         }
         else
         {
           Write-Host "Version ${{ inputs.projectVersion }}"
-          $versioningArg = --version ${{ inputs.projectVersion }}
+          $versioningArg = "--version ${{ inputs.projectVersion }}"
         }
 
         foreach($project in Get-ChildItem -Path ${{ github.workspace }}] -Recurse -Filter project.json -File)
         {
           # Add authentication here
-          & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "$${{ github.workspace }}/output" --autoVersion -l en-US
+          & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "$${{ github.workspace }}/output" $versioningArg -l en-US
         }
 
 #        ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ github.workspace }}
