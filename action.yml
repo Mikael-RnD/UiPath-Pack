@@ -30,7 +30,7 @@ runs:
       run: |
         $projectList = Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File
         $projectVersion = ${{ inputs.projectVersion }}
-        if([string]::IsNullOrEmpty(${{ inputs.projectVersion }}))
+        if([string]::IsNullOrEmpty($projectVersion))
         {
           Write-Host "Auto-versioning"
         }
