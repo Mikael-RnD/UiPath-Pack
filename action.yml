@@ -48,5 +48,5 @@ runs:
         foreach($project in $projectList)
         {
           Write-Host $($project.FullName)
-          & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --autoVersion -l en-US
+          & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --version ${{ inputs.projectVersion }} -l en-US
         }
