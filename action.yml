@@ -45,6 +45,7 @@ runs:
       shell: pwsh
       run: | 
         $projectVersion = ""
+        
         $versioningArg = ""
         if([string]::IsNullOrEmpty($projectVersion))
         {
