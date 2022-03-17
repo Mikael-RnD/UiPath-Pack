@@ -29,15 +29,6 @@ runs:
       shell: pwsh
       run: |
         $projectList = Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File
-        $projectVersion = ${{ inputs.projectVersion }}
-        if([string]::IsNullOrEmpty($projectVersion))
-        {
-          Write-Host "Auto-versioning"
-        }
-        else
-        {
-          Write-Host "Version ${{ inputs.projectVersion }}"
-        }
         if($projectList.Count -gt 0)
         {
         foreach($project in $projectList)
@@ -52,4 +43,24 @@ runs:
       
     - name: Pack
       shell: pwsh
-      run: ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ github.workspace }}
+      run: | 
+        $projectVersion = ${{ inputs.projectVersion }}
+        $versioningArg = ""
+        if([string]::IsNullOrEmpty($projectVersion))
+        {
+          Write-Host "Auto-versioning"
+          $versioningArg = --autoVersion
+        }
+        else
+        {
+          Write-Host "Version ${{ inputs.projectVersion }}"
+          $versioningArg = --version ${{ inputs.projectVersion }}
+        }
+
+        foreach($project in Get-ChildItem -Path ${{ github.workspace }}] -Recurse -Filter project.json -File)
+        {
+          # Add authentication here
+          & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "$${{ github.workspace }}/output" --autoVersion -l en-US
+        }
+
+#        ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ github.workspace }}
