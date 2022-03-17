@@ -18,8 +18,7 @@ inputs:
     required: true
   projectVersion:
     description: 'Optional project version tag. Defaults to autoversion otherwise'
-    required: false
-    default: ""
+    required: true
 
 runs:
   using: "composite"
