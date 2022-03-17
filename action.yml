@@ -47,14 +47,13 @@ runs:
 
         foreach($project in Get-ChildItem -Path ${{ github.workspace }}] -Recurse -Filter project.json -File)
         {
+          & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --autoVersion -l en-US
           if([string]::IsNullOrEmpty(${{ inputs.projectVersion }}))
           {
-            Write-Host "Auto-versioning"
             & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --autoVersion -l en-US
           }
           else
           {
-            Write-Host "Version ${{ inputs.projectVersion }}"
             & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --version ${{ inputs.projectVersion }} -l en-US
           }
 
