@@ -18,7 +18,7 @@ inputs:
     required: true
   projectVersion:
     description: 'Optional project version tag. Defaults to autoversion otherwise'
-    required: true
+    required: false
     default: ""
 
 runs:
@@ -48,5 +48,9 @@ runs:
         foreach($project in $projectList)
         {
           Write-Host $($project.FullName)
+          if(${{ inputs.projectVersion.default }} -eq ${{ inputs.projectVersion }})
+          {
+            Write-Host "Default value"
+          }
           & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --version ${{ inputs.projectVersion }} -l en-US
         }
