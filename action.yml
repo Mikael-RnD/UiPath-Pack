@@ -44,9 +44,6 @@ runs:
     - name: Pack
       shell: pwsh
       run: | 
-        $projectVersion = "${{ inputs.projectVersion }}"
-        $versioningArg = ""
-
 
         foreach($project in Get-ChildItem -Path ${{ github.workspace }}] -Recurse -Filter project.json -File)
         {
