@@ -16,6 +16,10 @@ inputs:
   orchestratorPassword:
     description: 'Password for the Orchestrator account'
     required: true
+  projectVersion:
+    description: 'Optional project version tag. Defaults to autoversion otherwise'
+    required: false
+    default: ""
 
 runs:
   using: "composite"
@@ -25,6 +29,15 @@ runs:
       shell: pwsh
       run: |
         $projectList = Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File
+        $projectVersion = ${{ inputs.projectVersion }}
+        if([string]::IsNullOrEmpty(${{ inputs.projectVersion }}))
+        {
+          Write-Host "Auto-versioning"
+        }
+        else
+        {
+          Write-Host "Version ${{ inputs.projectVersion }}"
+        }
         if($projectList.Count -gt 0)
         {
         foreach($project in $projectList)
@@ -34,7 +47,7 @@ runs:
         }
         else
         {
-          return -1
+          exit -1
         }
       
     - name: Pack
