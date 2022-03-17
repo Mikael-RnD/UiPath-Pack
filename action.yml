@@ -50,7 +50,7 @@ runs:
 
         foreach($project in Get-ChildItem -Path ${{ github.workspace }}] -Recurse -Filter project.json -File)
         {
-          if([string]::IsNullOrEmpty($projectVersion))
+          if([string]::IsNullOrEmpty(${{ inputs.projectVersion }}))
           {
             Write-Host "Auto-versioning"
             & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --autoVersion -l en-US
