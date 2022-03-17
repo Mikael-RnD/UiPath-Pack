@@ -44,24 +44,25 @@ runs:
     - name: Pack
       shell: pwsh
       run: | 
-        $projectVersion = ""
-        
+        $projectVersion = "${{ inputs.projectVersion }}"
         $versioningArg = ""
-        if([string]::IsNullOrEmpty($projectVersion))
-        {
-          Write-Host "Auto-versioning"
-          $versioningArg = "--autoVersion"
-        }
-        else
-        {
-          Write-Host "Version ${{ inputs.projectVersion }}"
-          $versioningArg = "--version ${{ inputs.projectVersion }}"
-        }
+
 
         foreach($project in Get-ChildItem -Path ${{ github.workspace }}] -Recurse -Filter project.json -File)
         {
+          if([string]::IsNullOrEmpty($projectVersion))
+          {
+            Write-Host "Auto-versioning"
+            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --autoVersion -l en-US
+          }
+          else
+          {
+            Write-Host "Version ${{ inputs.projectVersion }}"
+            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --version ${{ inputs.projectVersion }} -l en-US
+          }
+
           # Add authentication here
-          & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" $versioningArg -l en-US
+
         }
 
 #        ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ github.workspace }}
