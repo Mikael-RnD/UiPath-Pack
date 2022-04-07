@@ -22,7 +22,6 @@ inputs:
   orchestratorLogicalName:
     description: 'Logical name for Orchestrator instance'
     required: true
-    default: 'default'
   projectVersion:
     description: 'Project version for the generated package. Should be based on tag in GitHub'
     required: true
@@ -36,7 +35,7 @@ runs:
         $analysisFailed = 0
         foreach($project in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
         {
-          & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$($project.FullName)" --stopOnRuleViolation --orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} --orchestratorAccountForApp default --orchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" --orchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" --orchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --orchestratorFolder "${{ inputs.orchestratorFolder }}"
+          & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$($project.FullName)" --stopOnRuleViolation --orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} --orchestratorAccountForApp ${{ inputs.orchestratorLogicalName }} --orchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" --orchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" --orchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --orchestratorFolder "${{ inputs.orchestratorFolder }}"
           if($LASTEXITCODE -ne 0)
           {
             $analysisFailed = 1
