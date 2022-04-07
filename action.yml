@@ -10,33 +10,51 @@ inputs:
   orchestratorFolder:
     description: 'Folder path in modern folder setup'
     required: true
-  orchestratorUsername:
-    description: 'Account for authenticating to Orchestrator'
+  orchestratorApplicationId:
+    description: 'Orchestrator Application ID for external applicaiton in Orchestrator'
     required: true
-  orchestratorPassword:
-    description: 'Password for the Orchestrator account'
+  orchestratorApplicationSecret:
+    description: 'Application Secret for external application in Orchestrator'
+    required: true
+  orchestratorApplicationScope:
+    description: 'Application scope for determining accesses of External Application'
+    required: true
+  orchestratorLogicalName:
+    description: 'Logical name for Orchestrator instance'
+    required: true
+    default: 'default'
+  projectVersion:
+    description: 'Project version for the generated package. Should be based on tag in GitHub'
     required: true
 
 runs:
   using: "composite"
   steps:
-  # test
     - name: Analyze
-      shell: pwsh
+      shell: powershell
       run: |
-        $projectList = Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File
-        if($projectList.Count -gt 0)
+        $analysisFailed = 0
+        foreach($project in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
         {
-        foreach($project in $projectList)
+          & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$($project.FullName)" --stopOnRuleViolation --orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} --orchestratorAccountForApp default --orchestratorApplicationId ${{ inputs.orchestratorApplicationId }} --orchestratorApplicationSecret ${{ inputs.orchestratorApplicationSecret }} --orchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --orchestratorFolder "${{ inputs.orchestratorFolder }}"
+          if($LASTEXITCODE -ne 0)
           {
-            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package analyze "$($project.FullName)" --stopOnRuleViolation --ignoredRules ST-SEC-008 --orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} --orchestratorUsername ${{ inputs.orchestratorUsername }} --orchestratorPassword ${{ inputs.orchestratorPassword }} --orchestratorFolder ${{ inputs.orchestratorFolder }}          
+            $analysisFailed = 1
           }
         }
-        else
+        if($analysisFailed -ne 0)
         {
-          return -1
+          throw "Workflow analysis failed"
         }
-      
+# run: ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ github.workspace }}
     - name: Pack
-      shell: pwsh
-      run: ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ github.workspace }}
+      shell: powershell
+      run: |
+        foreach($project in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
+          {
+            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --libraryOrchestratorUrl ${{ inputs.orchestratorUrl }} --libraryOrchestratorTenant ${{ inputs.OrchestratorTenant }} --libraryOrchestratorAccountForApp ${{ inputs.orchestratorLogicalName }} --libraryOrchestratorApplicationId ${{ inputs.orchestratorApplicationId }} --libraryOrchestratorApplicationSecret ${{ inputs.orchestratorApplicationSecret }} --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" --version ${{ inputs.projectVersion }} -l en-US
+            if($LASTEXITCODE -ne 0)
+            {
+              throw "Pack Failed"
+            }
+          }
