@@ -25,6 +25,11 @@ inputs:
   projectVersion:
     description: 'Project version for the generated package. Should be based on tag in GitHub'
     required: true
+outputs:
+  packagesPath:
+    description: 'Folder containing the generated packages'
+    value: ${{ steps.pack.outputs.packages }}
+
 
 runs:
   using: "composite"
@@ -46,12 +51,15 @@ runs:
           throw "Workflow analysis failed"
         }
 # run: ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ github.workspace }}
-    - name: Pack
+    - id: pack
+      name: Pack
       shell: powershell
       run: |
+        $packages = "${{ github.workspace }}\packages"
+        echo "::set-output name=packagesPath::$(echo $packages)"
         foreach($project in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
           {
-            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "${{ github.workspace }}\output" --libraryOrchestratorUrl ${{ inputs.orchestratorUrl }} --libraryOrchestratorTenant ${{ inputs.OrchestratorTenant }} --libraryOrchestratorAccountForApp ${{ inputs.orchestratorLogicalName }} --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" --version ${{ inputs.projectVersion }} -l en-US
+            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "$packages" --libraryOrchestratorUrl ${{ inputs.orchestratorUrl }} --libraryOrchestratorTenant ${{ inputs.OrchestratorTenant }} --libraryOrchestratorAccountForApp ${{ inputs.orchestratorLogicalName }} --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" --version ${{ inputs.projectVersion }} -l en-US
             if($LASTEXITCODE -ne 0)
             {
               throw "Pack Failed"
