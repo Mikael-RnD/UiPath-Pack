@@ -43,9 +43,11 @@ jobs:
           orchestratorUrl: ${{ env.ORCHESTRATOR_URL }}
           orchestratorTenant: ${{ env.ORCHESTRATOR_TENANT }}
           orchestratorFolder: ${{ env.ORCHESTRATOR_FOLDER }}
-          orchestratorUsername: ${{ env.UIPATH_ACCOUNT }}
-          orchestratorPassword: ${{ env.UIPATH_PASSWORD }}
-          
+          orchestratorApplicationId: ${{ secrets.UIPATH_APP_ID }}
+          orchestratorApplicationSecret: ${{ secrets.UIPATH_APP_SECRET }}
+          orchestratorApplicationScope: ${{ secrets.UIPATH_APP_SCOPE }}
+          orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
+
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v2
         with:
