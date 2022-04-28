@@ -43,7 +43,7 @@ jobs:
           orchestratorApplicationScope: ${{ secrets.UIPATH_APP_SCOPE }}
           orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
 
-      - run: echo ${{ pack.outputs.packagesPath }}
+      - run: echo ${{ steps.pack.outputs.packagesPath }}
 
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v2
