@@ -42,6 +42,7 @@ jobs:
           orchestratorApplicationSecret: ${{ secrets.UIPATH_APP_SECRET }}
           orchestratorApplicationScope: ${{ secrets.UIPATH_APP_SCOPE }}
           orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
+          projectVersion: '1.0.0'
 
       - run: echo ${{ steps.pack.outputs.packagesPath }}
 
