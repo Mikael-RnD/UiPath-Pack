@@ -59,7 +59,7 @@ runs:
         echo "::set-output name=packagesPath::$(echo $packages)"
         foreach($project in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
           {
-            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "$packages" --libraryOrchestratorUrl ${{ inputs.orchestratorUrl }} --libraryOrchestratorTenant ${{ inputs.OrchestratorTenant }} --libraryOrchestratorAccountForApp ${{ inputs.orchestratorLogicalName }} --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" --version ${{ inputs.projectVersion }} -l en-US
+            & "C:\\uipathcli\\lib\\net461\\uipcli.exe" package pack "$($project.FullName)" -o "$($packages.FullName)" --libraryOrchestratorUrl ${{ inputs.orchestratorUrl }} --libraryOrchestratorTenant ${{ inputs.OrchestratorTenant }} --libraryOrchestratorAccountForApp ${{ inputs.orchestratorLogicalName }} --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" --version ${{ inputs.projectVersion }} -l en-US
             if($LASTEXITCODE -ne 0)
             {
               throw "Pack Failed"
