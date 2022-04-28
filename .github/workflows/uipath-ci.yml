@@ -14,16 +14,10 @@ on:
   workflow_dispatch:
 
 env:
-  # UiPath account stored as a Secret in Github
-  UIPATH_ACCOUNT: ${{ secrets.UIPATH_ACCOUNT }}
-  # Password for the UiPath account stored as a Secret
-  UIPATH_PASSWORD: ${{ secrets.UIPATH_PASSWORD }}
   # URL to the Orchestrator instance
-  ORCHESTRATOR_URL: "https://cloud.uipath.com/hppcntv/"
-  # Orchestrator tenant to deploy the project to
-  ORCHESTRATOR_TENANT: "Shared"
+  ORCHESTRATOR_URL: "https://cloud.uipath.com/"
   # Folder in UiPath Orchestrator, for Modern Folder use
-  ORCHESTRATOR_FOLDER: "TestFolder"
+  ORCHESTRATOR_FOLDER: "Shared"
 
 jobs:
   # This workflow contains a single job called "build"
@@ -42,7 +36,7 @@ jobs:
         uses: ./
         with:
           orchestratorUrl: ${{ env.ORCHESTRATOR_URL }}
-          orchestratorTenant: ${{ env.ORCHESTRATOR_TENANT }}
+          orchestratorTenant: ${{ secrets.UIPATH_TENANT }}
           orchestratorFolder: ${{ env.ORCHESTRATOR_FOLDER }}
           orchestratorApplicationId: ${{ secrets.UIPATH_APP_ID }}
           orchestratorApplicationSecret: ${{ secrets.UIPATH_APP_SECRET }}
