@@ -38,7 +38,8 @@ jobs:
       - uses: Mikael-RnD/UiPath-Setup@main
       
       # Run workflow analysis on and pack UiPath projects
-      - uses: ./
+      - id: uipath-pack
+        uses: ./
         with:
           orchestratorUrl: ${{ env.ORCHESTRATOR_URL }}
           orchestratorTenant: ${{ env.ORCHESTRATOR_TENANT }}
@@ -48,9 +49,11 @@ jobs:
           orchestratorApplicationScope: ${{ secrets.UIPATH_APP_SCOPE }}
           orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
 
+      - run: echo ${{ uipath-pack.outputs.packagesPath }}
+
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v2
         with:
-          path: ${{ github.workspace }}\output
+          path: ${{ uipath-pack.outputs.packagesPath }}
           if-no-files-found: error
           retention-days: 90
