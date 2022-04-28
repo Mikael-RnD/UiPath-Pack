@@ -32,7 +32,7 @@ jobs:
       - uses: Mikael-RnD/UiPath-Setup@main
       
       # Run workflow analysis on and pack UiPath projects
-      - id: uipath-pack
+      - id: pack
         uses: ./
         with:
           orchestratorUrl: ${{ env.ORCHESTRATOR_URL }}
@@ -43,7 +43,7 @@ jobs:
           orchestratorApplicationScope: ${{ secrets.UIPATH_APP_SCOPE }}
           orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
 
-      - run: echo ${{ uipath-pack.outputs.packagesPath }}
+      - run: echo ${{ pack.outputs.packagesPath }}
 
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v2
