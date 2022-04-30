@@ -14,16 +14,10 @@ on:
   workflow_dispatch:
 
 env:
-  # UiPath account stored as a Secret in Github
-  UIPATH_ACCOUNT: ${{ secrets.UIPATH_ACCOUNT }}
-  # Password for the UiPath account stored as a Secret
-  UIPATH_PASSWORD: ${{ secrets.UIPATH_PASSWORD }}
   # URL to the Orchestrator instance
-  ORCHESTRATOR_URL: "https://cloud.uipath.com/hppcntv/"
-  # Orchestrator tenant to deploy the project to
-  ORCHESTRATOR_TENANT: "Shared"
+  ORCHESTRATOR_URL: "https://cloud.uipath.com/"
   # Folder in UiPath Orchestrator, for Modern Folder use
-  ORCHESTRATOR_FOLDER: "TestFolder"
+  ORCHESTRATOR_FOLDER: "Shared"
 
 jobs:
   # This workflow contains a single job called "build"
@@ -32,23 +26,27 @@ jobs:
     runs-on: windows-2019
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       # The UiPath CLI is installed on Runner
-      - uses: Mikael-RnD/UiPath-Setup@main
+      - uses: Mikael-RnD/UiPath-Setup-JS@main
       
       # Run workflow analysis on and pack UiPath projects
-      - uses: ./
+      - id: pack
+        uses: ./
         with:
           orchestratorUrl: ${{ env.ORCHESTRATOR_URL }}
-          orchestratorTenant: ${{ env.ORCHESTRATOR_TENANT }}
+          orchestratorTenant: ${{ secrets.UIPATH_TENANT }}
           orchestratorFolder: ${{ env.ORCHESTRATOR_FOLDER }}
-          orchestratorUsername: ${{ env.UIPATH_ACCOUNT }}
-          orchestratorPassword: ${{ env.UIPATH_PASSWORD }}
-          
+          orchestratorApplicationId: ${{ secrets.UIPATH_APP_ID }}
+          orchestratorApplicationSecret: ${{ secrets.UIPATH_APP_SECRET }}
+          orchestratorApplicationScope: ${{ secrets.UIPATH_APP_SCOPE }}
+          orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
+          projectVersion: '1.0.0'
+
       # Upload packages as build artifacts to be handled by deploy job
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
-          path: ${{ github.workspace }}\output
+          path: ${{ github.workspace }}\packages
           if-no-files-found: error
           retention-days: 90
