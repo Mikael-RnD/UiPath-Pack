@@ -26,10 +26,10 @@ jobs:
     runs-on: windows-2019
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       
       # The UiPath CLI is installed on Runner
-      - uses: Mikael-RnD/UiPath-Setup@main
+      - uses: Mikael-RnD/UiPath-Setup-JS@main
       
       # Run workflow analysis on and pack UiPath projects
       - id: pack
