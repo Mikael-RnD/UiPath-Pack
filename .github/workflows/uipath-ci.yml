@@ -44,10 +44,8 @@ jobs:
           orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
           projectVersion: '1.0.0'
 
-      - run: echo ${{ steps.pack.outputs.packagesPath }}
-
       # Upload packages as build artifacts to be handled by deploy job
-      - uses: actions/upload-artifact@v2
+      - uses: actions/upload-artifact@v3
         with:
           path: ${{ steps.pack.outputs.packagesPath }}
           if-no-files-found: error
