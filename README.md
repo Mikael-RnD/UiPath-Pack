@@ -5,7 +5,7 @@ Example usage:
 
       # .nupkg packages are deployed to UiPath Orchestrator
       - name: UiPath Pack
-        uses: Mikael-RnD/UiPath-Pack-Analyze@main
+        uses: Mikael-RnD/UiPath-Pack@main
         with:
           # All inputs are required
           orchestratorUrl: # Link to UiPath Orchestrator instance
