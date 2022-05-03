@@ -1,5 +1,5 @@
 # UiPath-Pack
-Github Action for packing all UiPath projects within a GitHub repository.
+Github Action for packing all UiPath projects within a GitHub repository with a given project version number. Recommend the use of tags for project version number.
 
 Example usage:
 
