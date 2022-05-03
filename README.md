@@ -3,7 +3,7 @@ Github Action for packing all UiPath projects within a GitHub repository with a 
 
 Example usage:
 
-      # .nupkg packages are deployed to UiPath Orchestrator
+      # Action for packing UiPath projects in a repository
       - name: UiPath Pack
         uses: Mikael-RnD/UiPath-Pack@main
         with:
