@@ -1,5 +1,5 @@
-# UiPath-Pack-Analyze
-Github Action for running the workflow analyzer and packing all UiPath projects within a repository.
+# UiPath-Pack
+Github Action for packing all UiPath projects within a GitHub repository.
 
 Example usage:
 
