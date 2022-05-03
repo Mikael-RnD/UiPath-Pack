@@ -34,23 +34,6 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Analyze
-      shell: powershell
-      run: |
-        $analysisFailed = 0
-        foreach($project in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
-        {
-          & uipcli package analyze "$($project.FullName)" --stopOnRuleViolation --orchestratorUrl ${{ inputs.orchestratorUrl }} --orchestratorTenant ${{ inputs.OrchestratorTenant }} --orchestratorAccountForApp ${{ inputs.orchestratorLogicalName }} --orchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" --orchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" --orchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --orchestratorFolder "${{ inputs.orchestratorFolder }}"
-          if($LASTEXITCODE -ne 0)
-          {
-            $analysisFailed = 1
-          }
-        }
-        if($analysisFailed -ne 0)
-        {
-          throw "Workflow analysis failed"
-        }
-# run: ${{ github.action_path }}/pack-uipath-projects.ps1 ${{ github.workspace }}
     - id: pack
       name: Pack
       shell: powershell
