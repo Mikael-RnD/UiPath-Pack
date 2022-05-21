@@ -28,7 +28,7 @@ inputs:
 outputs:
   packagesPath:
     description: 'Folder containing the generated packages'
-    value: ${{ steps.pack.outputs.packages }}
+    value: ${{ steps.set-output-folder.outputs.packages }}
 
 
 runs:
