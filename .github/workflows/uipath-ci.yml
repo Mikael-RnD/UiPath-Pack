@@ -44,9 +44,10 @@ jobs:
           orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
           projectVersion: '1.0.0'
 
+      - run: echo ${{ steps.pack.outputs.packagesPath }}
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v3
         with:
-          path: ${{ github.workspace }}\packages
+          path: ${{ steps.pack.outputs.packagesPath }} #${{ github.workspace }}\packages
           if-no-files-found: error
           retention-days: 90
