@@ -36,7 +36,7 @@ runs:
   steps:
     - id: pack
       name: Pack
-      shell: powershell
+      shell: pwsh
       run: |
         $packages = "${{ github.workspace }}\packages"
         echo "::set-output name=packagesPath::$(echo $packages)"
