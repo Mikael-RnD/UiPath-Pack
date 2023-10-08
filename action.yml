@@ -1,6 +1,9 @@
 name: 'UiPath Pack'
-description: 'Analyzes and packs all UiPath projects within the repository it runs in. Analyze uses UiPath Workflow Analyzer and will cause the job to stop on Rule Violationes.'
+description: 'Packs all UiPath projects within a repository into .nupkg packages for deployment by other actions. Optional behavior: Pack specified paths only'
 inputs:
+  projectFilePaths:
+    description: 'Relative paths to projecct.json files. Used for passing explicit paths to project files to perform analysis. Can be used as multi-line inputs'
+    required: false
   orchestratorUrl: 
     description: 'Orchestrator instance URL'
     required: true
@@ -39,10 +42,25 @@ runs:
       shell: pwsh
       run: |
         $packages = "${{ github.workspace }}\packages"
-        echo "::set-output name=packagesPath::$(echo $packages)"
-        foreach($project in Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File)
+        echo "packagesPath=$packages" >> $Env:GITHUB_OUTPUT
+        
+        if([string]::IsNullOrEmpty("${{ inputs.projectFilePaths }}")) 
+        {
+          Write-Host "Scanning full repository directory for project.json files"
+          $projectJsonFiles = Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File
+        } 
+        else 
+        {
+          Write-Host "Getting full path for files given as inputs"
+          $projectJsonFiles = "${{ inputs.projectFilePaths }}".Trim()
+          $projectJsonFiles = $projectJsonFiles -split "`r`n"
+          $projectJsonFiles | Where { -not  [string]::IsNullOrWhiteSpace($_) } | Get-ChildItem -File
+        }
+        
+        foreach($p in $projectJsonFiles)
           {
-            & uipcli package pack "$($project.FullName)" --output "${{ github.workspace }}\packages" --libraryOrchestratorUrl ${{ inputs.orchestratorUrl }} --libraryOrchestratorTenant ${{ inputs.OrchestratorTenant }} --libraryOrchestratorAccountForApp ${{ inputs.orchestratorLogicalName }} --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" --version ${{ inputs.projectVersion }} -l en-US
+            $project = [System.IO.FileInfo]$p
+            & uipcli package pack "$($project.FullName)" --output "$packages" --libraryOrchestratorUrl ${{ inputs.orchestratorUrl }} --libraryOrchestratorTenant ${{ inputs.OrchestratorTenant }} --libraryOrchestratorAccountForApp ${{ inputs.orchestratorLogicalName }} --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" --version ${{ inputs.projectVersion }} -l en-US
             if($LASTEXITCODE -ne 0)
             {
               throw "Pack Failed"
