@@ -60,7 +60,18 @@ runs:
         foreach($p in $projectJsonFiles)
           {
             $project = [System.IO.FileInfo]$p
-            & uipcli package pack "$($project.FullName)" --output "$packages" --libraryOrchestratorUrl ${{ inputs.orchestratorUrl }} --libraryOrchestratorTenant ${{ inputs.OrchestratorTenant }} --libraryOrchestratorAccountForApp ${{ inputs.orchestratorLogicalName }} --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" --version ${{ inputs.projectVersion }} -l en-US
+            uipcli package pack "$($project.FullName)" `
+              --output "$packages" `
+              --libraryOrchestratorUrl "${{ inputs.orchestratorUrl }}" `
+              --libraryOrchestratorTenant "${{ inputs.OrchestratorTenant }}" `
+              --libraryOrchestratorAccountForApp "${{ inputs.orchestratorLogicalName }}" `
+              --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" `
+              --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" `
+              --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" `
+              --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" `
+              --version ${{ inputs.projectVersion }} `
+              -l en-US
+              
             if($LASTEXITCODE -ne 0)
             {
               throw "Pack Failed"

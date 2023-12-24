@@ -26,10 +26,10 @@ jobs:
     runs-on: windows-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       # The UiPath CLI is installed on Runner
-      - uses: Mikael-RnD/UiPath-Setup-JS@main
+      - uses: Mikael-RnD/setup-uipath@v1
       
       # Run workflow analysis on and pack UiPath projects
       - id: pack
@@ -56,10 +56,10 @@ jobs:
     runs-on: windows-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       
       # The UiPath CLI is installed on Runner
-      - uses: Mikael-RnD/UiPath-Setup-JS@main
+      - uses: Mikael-RnD/setup-uipath@v1
       
       # Run workflow analysis on and pack UiPath projects
       - id: pack
