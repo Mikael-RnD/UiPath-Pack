@@ -6,7 +6,8 @@ inputs:
     required: false
   orchestratorUrl: 
     description: 'Orchestrator instance URL'
-    required: true
+    default: "https://cloud.uipath.com/"
+    required: false
   orchestratorTenant:
     description: 'Tenant on the Orchestrator instance'
     required: true
@@ -21,7 +22,8 @@ inputs:
     required: true
   orchestratorApplicationScope:
     description: 'Application scope for determining accesses of External Application'
-    required: true
+    default: "OR.Assets OR.BackgroundTasks OR.Execution OR.Folders OR.Jobs OR.Machines.Read OR.Monitoring OR.Robots.Read OR.Settings.Read OR.TestSets OR.TestSetExecutions OR.TestSetSchedules OR.Users.Read"
+    required: false
   orchestratorLogicalName:
     description: 'Logical name for Orchestrator instance'
     required: true
@@ -32,7 +34,6 @@ outputs:
   packagesPath:
     description: 'Folder containing the generated packages'
     value: ${{ steps.pack.outputs.packagesPath }}
-
 
 runs:
   using: "composite"
