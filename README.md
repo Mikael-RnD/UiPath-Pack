@@ -1,34 +1,64 @@
 # UiPath-Pack
-Github Action for packing UiPath projects within a GitHub repository with a given project version number. Recommend the use of tags for project version number. Built as a wrapper around the UiPath CLI Task for [packing projects](https://docs.uipath.com/test-suite/automation-cloud/latest/user-guide/packing-projects-into-a-package)
+Github Action for packing UiPath projects within a GitHub repository into .nupkg packages, with a given project version number (preferably a semver based version).
+
+Built as a wrapper around the UiPath CLI Task for [packing projects](https://docs.uipath.com/test-suite/automation-cloud/latest/user-guide/packing-projects-into-a-package)
+
+## Setup
+
+This action requires the following items to be configured:
+- UiPath CLI installed on GitHub Actions Runner. This can be done by running the [setup-uipath action](https://github.com/Mikael-RnD/setup-uipath) before this action
+- [An external application created in Orchestrator](https://docs.uipath.com/automation-cloud/automation-cloud/latest/admin-guide/managing-external-applications) with the access scopes specified in the [UiPath CLI documentation](https://docs.uipath.com/test-suite/automation-cloud/latest/user-guide/executing-tasks-cli). With the credentials passed to this actions input from GitHub Secrets (or other safe credential stores)
+
 
 ## Example usage
+
+### Minimum required inputs
+
+In the scenario below, the action is used to pack all projects within a repository into .nupkg packages and uses UiPath Automation Cloud for its Orchestrator instance
 
       # Action for packing UiPath projects in a repository
       - name: UiPath Pack
         uses: Mikael-RnD/UiPath-Pack@v1
         with:
-          projectFilePaths: TheProject/project.json # optional input
-          # All inputs below are required
-          orchestratorUrl: "https://cloud.uipath.com/" # Base URL to Orchestrator Instance
-          orchestratorTenant: TheTenant # Name of tenant where packages are deployed
-          orchestratorFolder: "Finance/SE" # Orchestrator Folder path where packages are deployed
-          orchestratorApplicationId: ${{ secrets.UIPATH_APPLICATION_ID }} # Applicaiton Id for External Application in Orchestrator
-          orchestratorApplicationSecret: ${{ secrets.UIPATH_APPLICATION_SECRET }} # Application Secret for External Application in Orchestrator
-          orchestratorApplicationScope: "OR.Settings OR.Settings.Read OR.Robots OR.Robots.Read OR.Machines OR.Machines.Read OR.Execution OR.Assets OR.Jobs OR.Users OR.Users.Read OR.Monitoring OR.Tasks OR.Folders OR.Folders.Read OR.BackgroundTasks OR.TestSets OR.TestSetExecutions OR.TestSetSchedules OR.TestDataQueues" # Scope for the assigned external applicaiton
+          orchestratorTenant: TheTenant 
+          orchestratorFolder: "Finance/SE"
+          orchestratorApplicationId: ${{ secrets.UIPATH_APPLICATION_ID }} 
+          orchestratorApplicationSecret: ${{ secrets.UIPATH_APPLICATION_SECRET }} 
           orchestratorLogicalName: organizationname # Name of the UiPath Organization
           projectVersion: 1.0.0
 
+### All inputs used
+
+The scenario illustrated below shows how one can work with providing specific projects only, while also provding a local Orchestrator instance into the orchestratorUrl argument  
+
+      # Action for packing UiPath projects in a repository
+      - name: UiPath Pack
+        uses: Mikael-RnD/UiPath-Pack@v1
+        with:
+          projectFilePaths: | 
+            TheProject/project.json
+            Dispatcher/project.json
+          orchestratorUrl: "https://mycompany.orchestrator.com/" # Base URL to Orchestrator Instance
+          orchestratorTenant: TheTenant 
+          orchestratorFolder: "Finance/SE" 
+          orchestratorApplicationId: ${{ secrets.UIPATH_APPLICATION_ID }} 
+          orchestratorApplicationSecret: ${{ secrets.UIPATH_APPLICATION_SECRET }} 
+          orchestratorApplicationScope: "OR.Settings OR.Settings.Read OR.Robots OR.Robots.Read OR.Machines OR.Machines.Read OR.Execution OR.Assets OR.Jobs OR.Users OR.Users.Read OR.Monitoring OR.Tasks OR.Folders OR.Folders.Read OR.BackgroundTasks OR.TestSets OR.TestSetExecutions OR.TestSetSchedules OR.TestDataQueues" 
+          orchestratorLogicalName: organizationname 
+          projectVersion: 1.0.0
+
 ## Inputs
-|Name|Description|Required|Example value|
-|:--|:--|:--|:--|
-|projectFilePaths|Multiline input containing a list of projects to perform the operations on. If left empty, the action scans for any project.json files in the repository|False|TheProject/project.json|
-|orchestratorUrl|Base URL to Orchestrator instance|True|https://cloud.uipath.com/|
-|orchestratorTenant|Name of the Orchestrator tenant|True|TestTenant|
-|orchestratorLogicalName|Id of the UiPath organization|True|testorg|
-|orchestratorFolder|The fully qualified name of the Orchestrator folder where processes are deployed to|True|Finance/SE|
-|orchestratorApplicationId|Application ID for the CLI to authenticate with UiPath Orchestrator|True||
-|orchestratorApplicationSecret|Application Secret for the CLI to authenticate with UiPath Orchestrator|True||
-|projectVersion|A valid semver tag version number (without the leading 'v') to set the version of the packages|True|1.0.0|
+|Name|Description|Required|Default value|Example value|
+|:--|:--|:--|:--|:--|
+|projectFilePaths|Multiline input containing a list of projects to perform the operations on. If left empty, the action scans for any project.json files in the repository|False||TheProject/project.json|
+|orchestratorUrl|Base URL to Orchestrator instance|False|https://cloud.uipath.com/|https://mycompany.orchestrator.com/|
+|orchestratorTenant|Name of the Orchestrator tenant|True||TestTenant|
+|orchestratorLogicalName|Id of the UiPath organization|True||testorg|
+|orchestratorFolder|The fully qualified name of the Orchestrator folder where processes are deployed to|False||Finance/SE|
+|orchestratorApplicationId|Application ID for the CLI to authenticate with UiPath Orchestrator|True|||
+|orchestratorApplicationSecret|Application Secret for the CLI to authenticate with UiPath Orchestrator|True|||
+|orchestratorApplicationScope|External application scope|False|"OR.Assets OR.BackgroundTasks OR.Execution OR.Folders OR.Jobs OR.Machines.Read OR.Monitoring OR.Robots.Read OR.Settings.Read OR.TestSets OR.TestSetExecutions OR.TestSetSchedules OR.Users.Read"||
+|projectVersion|A valid semver tag version number (without the leading 'v') to set the version of the packages|True||1.0.0|
 
 ## Outputs
 |Name|Description|
