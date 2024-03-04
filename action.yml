@@ -1,4 +1,4 @@
-name: 'UiPath Pack'
+name: UiPath Pack
 description: 'Packs all UiPath projects within a repository into .nupkg packages for deployment by other actions. Optional behavior: Pack specified paths only'
 inputs:
   projectFilePaths:
@@ -57,7 +57,7 @@ runs:
           $projectJsonFiles = $projectJsonFiles -split "`r`n"
           $projectJsonFiles | Where { -not  [string]::IsNullOrWhiteSpace($_) } | Get-ChildItem -File
         }
-        
+        $repoUrl = "$env:GITHUB_SERVER_URL" + "/" + "$env:GITHUB_REPOSITORY"
         foreach($p in $projectJsonFiles)
           {
             $project = [System.IO.FileInfo]$p
@@ -71,7 +71,12 @@ runs:
               --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" `
               --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" `
               --version ${{ inputs.projectVersion }} `
-              -l en-US
+              -l en-US `
+              --repositoryUrl $repoUrl `
+              --repositoryCommit $env:GITHUB_SHA `
+              --repositoryBranch $env:GITHUB_REF_NAME `
+              --repositoryType git
+              
               
             if($LASTEXITCODE -ne 0)
             {
