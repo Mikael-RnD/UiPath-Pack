@@ -20,7 +20,6 @@ env:
   ORCHESTRATOR_FOLDER: "Shared"
 
 jobs:
-  # This workflow contains a single job called "build"
   pack:
     # The type of runner that the job will run on
     runs-on: windows-latest
@@ -45,14 +44,14 @@ jobs:
           projectVersion: '1.0.0'
 
       # Upload packages as build artifacts to be handled by deploy job
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          path: ${{ steps.pack.outputs.packagesPath }} #${{ github.workspace }}\packages
+          name: pack-artifact
+          path: ${{ steps.pack.outputs.packagesPath }}
           if-no-files-found: error
           retention-days: 90
 
   pack-with-file-input:
-    # The type of runner that the job will run on
     runs-on: windows-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
@@ -77,8 +76,9 @@ jobs:
           projectVersion: '1.0.0'
 
       # Upload packages as build artifacts to be handled by deploy job
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
-          path: ${{ steps.pack.outputs.packagesPath }} #${{ github.workspace }}\packages
+          name: pack-with-file-input
+          path: ${{ steps.pack.outputs.packagesPath }}
           if-no-files-found: error
           retention-days: 90
