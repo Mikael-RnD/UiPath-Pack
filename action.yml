@@ -58,28 +58,45 @@ runs:
           $projectJsonFiles | Where { -not  [string]::IsNullOrWhiteSpace($_) } | Get-ChildItem -File
         }
         $repoUrl = "$env:GITHUB_SERVER_URL" + "/" + "$env:GITHUB_REPOSITORY"
+        
         foreach($p in $projectJsonFiles)
+        {
+          $project = [System.IO.FileInfo]$p
+          uipcli package pack "$($project.FullName)" `
+            --output "$packages" `
+            --libraryOrchestratorUrl "${{ inputs.orchestratorUrl }}" `
+            --libraryOrchestratorTenant "${{ inputs.OrchestratorTenant }}" `
+            --libraryOrchestratorAccountForApp "${{ inputs.orchestratorLogicalName }}" `
+            --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" `
+            --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" `
+            --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" `
+            --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" `
+            --version ${{ inputs.projectVersion }} `
+            -l en-US `
+            --repositoryUrl $repoUrl `
+            --repositoryCommit $env:GITHUB_SHA `
+            --repositoryBranch $env:GITHUB_REF_NAME `
+            --repositoryType git 
+              
+          if($LASTEXITCODE -ne 0)
           {
-            $project = [System.IO.FileInfo]$p
-            uipcli package pack "$($project.FullName)" `
-              --output "$packages" `
-              --libraryOrchestratorUrl "${{ inputs.orchestratorUrl }}" `
-              --libraryOrchestratorTenant "${{ inputs.OrchestratorTenant }}" `
-              --libraryOrchestratorAccountForApp "${{ inputs.orchestratorLogicalName }}" `
-              --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" `
-              --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" `
-              --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" `
-              --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" `
-              --version ${{ inputs.projectVersion }} `
-              -l en-US `
-              --repositoryUrl $repoUrl `
-              --repositoryCommit $env:GITHUB_SHA `
-              --repositoryBranch $env:GITHUB_REF_NAME `
-              --repositoryType git
-              
-              
-            if($LASTEXITCODE -ne 0)
-            {
-              throw "Pack Failed"
-            }
+            throw "Pack Failed"
           }
+        }
+
+    - id: step-summary
+      if: always()
+      name: Step Summary
+      shell: pwsh
+      run: |
+        echo "### Generated packages: " >> $Env:GITHUB_STEP_SUMMARY
+
+        $packages = Get-ChildItem -Path "${{ steps.pack.outputs.packagesPath }}" -Recurse -Filter *.nupkg -File
+        foreach($package in $packages)
+        {
+          echo ":package: $($package.Name)" >> $Env:GITHUB_STEP_SUMMARY
+        }
+
+
+        
+
