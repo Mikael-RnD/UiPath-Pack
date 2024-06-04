@@ -30,6 +30,9 @@ inputs:
   projectVersion:
     description: 'Project version for the generated package. Should be based on tag in GitHub'
     required: true
+  releaseNotes:
+    description: 'Release notes for the package'
+    required: false
 outputs:
   packagesPath:
     description: 'Folder containing the generated packages'
@@ -71,6 +74,7 @@ runs:
             --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" `
             --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" `
             --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" `
+            --releaseNotes "${{ inputs.releaseNotes }}" `
             --version ${{ inputs.projectVersion }} `
             -l en-US `
             --repositoryUrl $repoUrl `
