@@ -42,6 +42,7 @@ jobs:
           orchestratorApplicationScope: ${{ secrets.UIPATH_APP_SCOPE }}
           orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
           projectVersion: '1.0.0'
+          releaseNotes: 'Initial release'
 
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v4
@@ -74,6 +75,7 @@ jobs:
           orchestratorApplicationScope: ${{ secrets.UIPATH_APP_SCOPE }}
           orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
           projectVersion: '1.0.0'
+          releaseNotes: 'Initial release with file input'
 
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v4
