@@ -45,22 +45,21 @@ runs:
       name: Pack
       shell: bash
       run: |
-        packages="${GITHUB_WORKSPACE}/packages"
+        packages="${{ github.workspace }}/packages"
         echo "packagesPath=$packages" >> $GITHUB_OUTPUT
 
         if [ -z "${{ inputs.projectFilePaths }}" ]; then
           echo "Scanning full repository directory for project.json files"
-          projectJsonFiles=$(find "${GITHUB_WORKSPACE}" -type f -name "project.json")
+          projectJsonFiles=$(find "${{ github.workspace }}" -type f -name "project.json")
         else
           echo "Getting full path for files given as inputs"
-          projectJsonFiles=$(echo "${{ inputs.projectFilePaths }}" | tr '\r\n' '\n' | sed '/^\s*$/d')
+          projectJsonFiles=$(echo "${{ inputs.projectFilePaths }}" | tr '\r\n' '\n' | sed '/^\s*$/d' | while read -r line; do echo "${{ github.workspace }}/$line"; done)
         fi
 
-        repoUrl="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+        repoUrl="${{ github.server_url }}/${{ github.repository }}"
 
-        for p in $projectJsonFiles; do
-          project=$(realpath "$p")
-          uipcli package pack "$project" \
+        while IFS= read -r p; do
+          uipcli package pack "$p" \
             --output "$packages" \
             --libraryOrchestratorUrl "${{ inputs.orchestratorUrl }}" \
             --libraryOrchestratorTenant "${{ inputs.orchestratorTenant }}" \
@@ -73,15 +72,15 @@ runs:
             --version "${{ inputs.projectVersion }}" \
             -l en-US \
             --repositoryUrl "$repoUrl" \
-            --repositoryCommit "$GITHUB_SHA" \
-            --repositoryBranch "$GITHUB_REF_NAME" \
+            --repositoryCommit "${{ github.sha }}" \
+            --repositoryBranch "${{ github.ref_name }}" \
             --repositoryType git
 
           if [ $? -ne 0 ]; then
             echo "Pack Failed"
             exit 1
           fi
-        done
+        done <<< "$projectJsonFiles"
 
     - id: step-summary
       if: always()
