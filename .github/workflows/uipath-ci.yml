@@ -28,7 +28,7 @@ jobs:
       - uses: actions/checkout@v4
       
       # The UiPath CLI is installed on Runner
-      - uses: Mikael-RnD/setup-uipath@v1
+      - uses: Mikael-RnD/setup-uipath@v2
       
       # Run workflow analysis on and pack UiPath projects
       - id: pack
@@ -52,21 +52,22 @@ jobs:
           if-no-files-found: error
           retention-days: 90
 
-  pack-with-file-input:
+  pack-with-multi-file-input:
     runs-on: windows-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
       
       # The UiPath CLI is installed on Runner
-      - uses: Mikael-RnD/setup-uipath@v1
+      - uses: Mikael-RnD/setup-uipath@v2
       
       # Run workflow analysis on and pack UiPath projects
       - id: pack
         uses: ./
         with:
           projectFilePaths: | 
-            TheProject/project.json
+            WindowsProject/project.json
+            Crossplatform Project/project.json
           orchestratorUrl: ${{ env.ORCHESTRATOR_URL }}
           orchestratorTenant: ${{ secrets.UIPATH_TENANT }}
           orchestratorFolder: ${{ env.ORCHESTRATOR_FOLDER }}
@@ -81,6 +82,45 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: pack-with-file-input
+          path: ${{ steps.pack.outputs.packagesPath }}
+          if-no-files-found: error
+          retention-days: 90
+
+  pack-with-ubuntu:
+    runs-on: ubuntu-latest
+    steps:
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v4
+      
+      - name: uipath-setup
+        uses: Mikael-RnD/setup-uipath@v2
+
+      - name: setup-dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: |
+            8.0.x
+      
+      # Run workflow analysis on and pack UiPath projects
+      - id: pack
+        uses: ./
+        with:
+          projectFilePaths: | 
+            Crossplatform Project/project.json
+          orchestratorUrl: ${{ env.ORCHESTRATOR_URL }}
+          orchestratorTenant: ${{ secrets.UIPATH_TENANT }}
+          orchestratorFolder: ${{ env.ORCHESTRATOR_FOLDER }}
+          orchestratorApplicationId: ${{ secrets.UIPATH_APP_ID }}
+          orchestratorApplicationSecret: ${{ secrets.UIPATH_APP_SECRET }}
+          orchestratorApplicationScope: ${{ secrets.UIPATH_APP_SCOPE }}
+          orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
+          projectVersion: '1.0.0'
+          releaseNotes: 'Initial release with file input'
+
+      # Upload packages as build artifacts to be handled by deploy job
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pack-with-ubuntu
           path: ${{ steps.pack.outputs.packagesPath }}
           if-no-files-found: error
           retention-days: 90
