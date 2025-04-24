@@ -4,8 +4,6 @@ Github Action for packing UiPath projects within a GitHub repository into .nupkg
 
 Built as a wrapper around the UiPath CLI Task for [packing projects](https://docs.uipath.com/automation-ops/automation-cloud/latest/user-guide/executing-tasks-cli#packing-projects-into-a-package)
 
-**Note:** The current version of this action is only compatible with Windows runners
-
 ## Setup
 
 This action requires the following items to be configured:
