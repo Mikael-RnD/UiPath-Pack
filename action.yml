@@ -43,64 +43,58 @@ runs:
   steps:
     - id: pack
       name: Pack
-      shell: pwsh
+      shell: bash
       run: |
-        $packages = "${{ github.workspace }}\packages"
-        echo "packagesPath=$packages" >> $Env:GITHUB_OUTPUT
-        
-        if([string]::IsNullOrEmpty("${{ inputs.projectFilePaths }}")) 
-        {
-          Write-Host "Scanning full repository directory for project.json files"
-          $projectJsonFiles = Get-ChildItem -Path ${{ github.workspace }} -Recurse -Filter project.json -File
-        } 
-        else 
-        {
-          Write-Host "Getting full path for files given as inputs"
-          $projectJsonFiles = "${{ inputs.projectFilePaths }}".Trim()
-          $projectJsonFiles = $projectJsonFiles -split "`r`n"
-          $projectJsonFiles | Where { -not  [string]::IsNullOrWhiteSpace($_) } | Get-ChildItem -File
-        }
-        $repoUrl = "$env:GITHUB_SERVER_URL" + "/" + "$env:GITHUB_REPOSITORY"
-        
-        foreach($p in $projectJsonFiles)
-        {
-          $project = [System.IO.FileInfo]$p
-          uipcli package pack "$($project.FullName)" `
-            --output "$packages" `
-            --libraryOrchestratorUrl "${{ inputs.orchestratorUrl }}" `
-            --libraryOrchestratorTenant "${{ inputs.OrchestratorTenant }}" `
-            --libraryOrchestratorAccountForApp "${{ inputs.orchestratorLogicalName }}" `
-            --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" `
-            --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" `
-            --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" `
-            --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" `
-            --releaseNotes "${{ inputs.releaseNotes }}" `
-            --version ${{ inputs.projectVersion }} `
-            -l en-US `
-            --repositoryUrl $repoUrl `
-            --repositoryCommit $env:GITHUB_SHA `
-            --repositoryBranch $env:GITHUB_REF_NAME `
-            --repositoryType git 
-              
-          if($LASTEXITCODE -ne 0)
-          {
-            throw "Pack Failed"
-          }
-        }
+        packages="${GITHUB_WORKSPACE}/packages"
+        echo "packagesPath=$packages" >> $GITHUB_OUTPUT
+
+        if [ -z "${{ inputs.projectFilePaths }}" ]; then
+          echo "Scanning full repository directory for project.json files"
+          projectJsonFiles=$(find "${GITHUB_WORKSPACE}" -type f -name "project.json")
+        else
+          echo "Getting full path for files given as inputs"
+          projectJsonFiles=$(echo "${{ inputs.projectFilePaths }}" | tr '\r\n' '\n' | sed '/^\s*$/d')
+        fi
+
+        repoUrl="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}"
+
+        for p in $projectJsonFiles; do
+          project=$(realpath "$p")
+          uipcli package pack "$project" \
+            --output "$packages" \
+            --libraryOrchestratorUrl "${{ inputs.orchestratorUrl }}" \
+            --libraryOrchestratorTenant "${{ inputs.orchestratorTenant }}" \
+            --libraryOrchestratorAccountForApp "${{ inputs.orchestratorLogicalName }}" \
+            --libraryOrchestratorApplicationId "${{ inputs.orchestratorApplicationId }}" \
+            --libraryOrchestratorApplicationSecret "${{ inputs.orchestratorApplicationSecret }}" \
+            --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" \
+            --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" \
+            --releaseNotes "${{ inputs.releaseNotes }}" \
+            --version "${{ inputs.projectVersion }}" \
+            -l en-US \
+            --repositoryUrl "$repoUrl" \
+            --repositoryCommit "$GITHUB_SHA" \
+            --repositoryBranch "$GITHUB_REF_NAME" \
+            --repositoryType git
+
+          if [ $? -ne 0 ]; then
+            echo "Pack Failed"
+            exit 1
+          fi
+        done
 
     - id: step-summary
       if: always()
       name: Step Summary
-      shell: pwsh
+      shell: bash
       run: |
-        echo "### Generated packages: " >> $Env:GITHUB_STEP_SUMMARY
+        echo "### Generated packages: " >> $GITHUB_STEP_SUMMARY
 
-        $packages = Get-ChildItem -Path "${{ steps.pack.outputs.packagesPath }}" -Recurse -Filter *.nupkg -File
-        foreach($package in $packages)
-        {
-          echo ":package: $($package.Name)" >> $Env:GITHUB_STEP_SUMMARY
-        }
+        packages=$(find "${{ steps.pack.outputs.packagesPath }}" -type f -name "*.nupkg")
+        for package in $packages; do
+          echo ":package: $(basename "$package")" >> $GITHUB_STEP_SUMMARY
+        done
 
 
-        
+
 
