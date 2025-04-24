@@ -20,7 +20,7 @@ In the scenario below, the action is used to pack all projects within a reposito
 ```yml
       # Action for packing UiPath projects in a repository
       - name: UiPath Pack
-        uses: Mikael-RnD/UiPath-Pack@v1
+        uses: Mikael-RnD/UiPath-Pack@v2
         with:
           orchestratorTenant: TheTenant 
           orchestratorFolder: "Finance/SE"
@@ -37,7 +37,7 @@ The scenario illustrated below shows how one can work with providing specific pr
 ```yml
       # Action for packing UiPath projects in a repository
       - name: UiPath Pack
-        uses: Mikael-RnD/UiPath-Pack@v1
+        uses: Mikael-RnD/UiPath-Pack@v2
         with:
           projectFilePaths: | 
             TheProject/project.json
