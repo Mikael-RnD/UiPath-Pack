@@ -59,6 +59,7 @@ runs:
         repoUrl="${{ github.server_url }}/${{ github.repository }}"
 
         while IFS= read -r p; do
+          echo "::group::uipcli output for packing project: $p"
           uipcli package pack "$p" \
             --output "$packages" \
             --libraryOrchestratorUrl "${{ inputs.orchestratorUrl }}" \
@@ -75,6 +76,8 @@ runs:
             --repositoryCommit "${{ github.sha }}" \
             --repositoryBranch "${{ github.ref_name }}" \
             --repositoryType git
+
+          echo "::endgroup::"
 
           if [ $? -ne 0 ]; then
             echo "Pack Failed"
