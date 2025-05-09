@@ -2,14 +2,14 @@
 
 Github Action for packing UiPath projects within a GitHub repository into .nupkg packages, with a given project version number (preferably a semver based version).
 
-Built as a wrapper around the UiPath CLI Task for [packing projects](https://docs.uipath.com/automation-ops/automation-cloud/latest/user-guide/executing-tasks-cli#packing-projects-into-a-package)
+Built as a wrapper around the UiPath CLI Task for [packing projects](https://docs.uipath.com/cicd-integrations/standalone/2024.10/user-guide/packing-projects-into-a-package)
 
 ## Setup
 
 This action requires the following items to be configured:
 
 - UiPath CLI installed on GitHub Actions Runner. This can be done by running the [setup-uipath action](https://github.com/Mikael-RnD/setup-uipath) before this action
-- [An external application created in Orchestrator](https://docs.uipath.com/automation-cloud/automation-cloud/latest/admin-guide/managing-external-applications) with the access scopes specified in the [UiPath CLI documentation](https://docs.uipath.com/automation-ops/automation-cloud/latest/user-guide/executing-tasks-cli#adding-an-external-application). With the credentials passed to this actions input from GitHub Secrets (or other safe credential stores)
+- [An external application created in Orchestrator](https://docs.uipath.com/automation-cloud/automation-cloud/latest/admin-guide/managing-external-applications) with the access scopes specified in the [UiPath CLI documentation](https://docs.uipath.com/cicd-integrations/standalone/2024.10/user-guide/executing-uipath-cli-tasks#api-access-application-scopes). With the credentials passed to this actions input from GitHub Secrets (or other safe credential stores)
 
 ## Example usage
 
