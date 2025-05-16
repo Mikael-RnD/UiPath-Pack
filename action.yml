@@ -33,6 +33,9 @@ inputs:
   releaseNotes:
     description: 'Release notes for the package'
     required: false
+  projectUrl:
+    description: 'Project URL for the generated package. Usually associated with the Automation Hub project. If not provided, the repository URL will be used'
+    required: false
 outputs:
   packagesPath:
     description: 'Folder containing the generated packages'
@@ -41,6 +44,20 @@ outputs:
 runs:
   using: "composite"
   steps:
+    - id: set-urls
+      name: Set URLs
+      shell: bash
+      run: |
+        repoUrl="${{ github.server_url }}/${{ github.repository }}"
+        echo "repoUrl=$repoUrl" >> $GITHUB_OUTPUT
+        if [ -z "${{ inputs.projectUrl }}" ]; then
+          echo "projectUrl=$repoUrl" >> $GITHUB_OUTPUT
+          echo "projectUrl: $repoUrl"
+        else
+          echo "projectUrl=${{ inputs.projectUrl }}" >> $GITHUB_OUTPUT
+          echo "projectUrl: ${{ inputs.projectUrl}}"
+        fi
+
     - id: pack
       name: Pack
       shell: bash
@@ -56,8 +73,6 @@ runs:
           projectJsonFiles=$(echo "${{ inputs.projectFilePaths }}" | tr '\r\n' '\n' | sed '/^\s*$/d' | while read -r line; do echo "${{ github.workspace }}/$line"; done)
         fi
 
-        repoUrl="${{ github.server_url }}/${{ github.repository }}"
-
         while IFS= read -r p; do
           echo "::group::uipcli output for packing project: $p"
           uipcli package pack "$p" \
@@ -72,10 +87,11 @@ runs:
             --releaseNotes "${{ inputs.releaseNotes }}" \
             --version "${{ inputs.projectVersion }}" \
             -l en-US \
-            --repositoryUrl "$repoUrl" \
+            --repositoryUrl "${{ steps.set-urls.outputs.repoUrl }}"  \
             --repositoryCommit "${{ github.sha }}" \
             --repositoryBranch "${{ github.ref_name }}" \
-            --repositoryType git
+            --repositoryType git \
+            --projectUrl "${{ steps.set-urls.outputs.projectUrl }}" 
 
           echo "::endgroup::"
 

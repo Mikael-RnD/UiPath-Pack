@@ -66,6 +66,7 @@ The scenario illustrated below shows how one can work with providing specific pr
 |**orchestratorApplicationScope**|External application scope|False|"OR.Assets OR.BackgroundTasks OR.Execution OR.Folders OR.Jobs OR.Machines.Read OR.Monitoring OR.Robots.Read OR.Settings.Read OR.TestSets OR.TestSetExecutions OR.TestSetSchedules OR.Users.Read"|
 |**projectVersion**|A valid semver tag version number (without the leading 'v') to set the version of the packages|True||
 |**releaseNotes**|Release notes to be added in the generated .nupkg files|False||
+|**projectUrl**|Project URL for the generated package. Usually associated with the Automation Hub project. If not provided, the repository URL will be used|||
 
 ## Outputs
 
