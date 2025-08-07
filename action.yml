@@ -91,7 +91,8 @@ runs:
             --repositoryCommit "${{ github.sha }}" \
             --repositoryBranch "${{ github.ref_name }}" \
             --repositoryType git \
-            --projectUrl "${{ steps.set-urls.outputs.projectUrl }}" 
+            --projectUrl "${{ steps.set-urls.outputs.projectUrl }}"  \
+            --traceLevel "Warning"
 
           echo "::endgroup::"
 
