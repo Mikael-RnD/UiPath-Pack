@@ -89,7 +89,7 @@ runs:
             -l en-US \
             --repositoryUrl "${{ steps.set-urls.outputs.repoUrl }}"  \
             --repositoryCommit "${{ github.sha }}" \
-            --repositoryBranch "${{ github.ref_name }}" \
+            --repositoryBranch "${{ github.head_ref || github.ref_name }}" \
             --repositoryType git \
             --projectUrl "${{ steps.set-urls.outputs.projectUrl }}"  \
             --traceLevel "Warning"
