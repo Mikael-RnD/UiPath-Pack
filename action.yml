@@ -40,6 +40,10 @@ inputs:
     description: 'Trace level for the packing process. Possible values: Verbose, Information, Warning, Error'
     default: "Information"
     required: false
+  author:
+    description: 'The package author. If not provided, the GitHub actor will be used as the author of the package'
+    required: false
+    default: "${{ github.actor }}"
 outputs:
   packagesPath:
     description: 'Folder containing the generated packages'
@@ -96,7 +100,8 @@ runs:
             --repositoryBranch "${{ github.head_ref || github.ref_name }}" \
             --repositoryType git \
             --projectUrl "${{ steps.set-urls.outputs.projectUrl }}"  \
-            --traceLevel "${{ inputs.traceLevel }}"
+            --traceLevel "${{ inputs.traceLevel }}" \
+            --author "${{ inputs.author }}"
 
           echo "::endgroup::"
 
