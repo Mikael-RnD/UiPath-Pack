@@ -25,10 +25,10 @@ jobs:
     runs-on: windows-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       # The UiPath CLI is installed on Runner
-      - uses: Mikael-RnD/setup-uipath@v2
+      - run: dotnet tool install UiPath.CLI.Windows --global
       
       # Run workflow analysis on and pack UiPath projects
       - id: pack
@@ -45,7 +45,7 @@ jobs:
           releaseNotes: 'Initial release'
 
       # Upload packages as build artifacts to be handled by deploy job
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: pack-artifact
           path: ${{ steps.pack.outputs.packagesPath }}
@@ -56,10 +56,10 @@ jobs:
     runs-on: windows-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
       # The UiPath CLI is installed on Runner
-      - uses: Mikael-RnD/setup-uipath@v2
+      - run: dotnet tool install UiPath.CLI.Windows --global
       
       # Run workflow analysis on and pack UiPath projects
       - id: pack
@@ -79,7 +79,7 @@ jobs:
           releaseNotes: 'Initial release with file input'
 
       # Upload packages as build artifacts to be handled by deploy job
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v6
         with:
           name: pack-with-file-input
           path: ${{ steps.pack.outputs.packagesPath }}
@@ -90,13 +90,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       
-      - name: uipath-setup
-        uses: Mikael-RnD/setup-uipath@v2
+      - run: dotnet tool install UiPath.CLI.Linux --global
 
       - name: setup-dotnet
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: |
             8.0.x
