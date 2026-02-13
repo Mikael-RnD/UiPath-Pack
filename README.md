@@ -61,12 +61,14 @@ The scenario illustrated below shows how one can work with providing specific pr
 |**orchestratorTenant**|Name of the Orchestrator tenant|True||
 |**orchestratorLogicalName**|Id of the UiPath organization|True||
 |**orchestratorFolder**|The fully qualified name of the Orchestrator folder where processes are deployed to|True||
-|**orchestratorApplicationId**|Application ID for the CLI to authenticate with UiPath Orchestrator|True|||
-|**orchestratorApplicationSecret**|Application Secret for the CLI to authenticate with UiPath Orchestrator|True|||
+|**orchestratorApplicationId**|Application ID for the CLI to authenticate with UiPath Orchestrator|True||
+|**orchestratorApplicationSecret**|Application Secret for the CLI to authenticate with UiPath Orchestrator|True||
 |**orchestratorApplicationScope**|External application scope|False|"OR.Assets OR.BackgroundTasks OR.Execution OR.Folders OR.Jobs OR.Machines.Read OR.Monitoring OR.Robots.Read OR.Settings.Read OR.TestSets OR.TestSetExecutions OR.TestSetSchedules OR.Users.Read"|
 |**projectVersion**|A valid semver tag version number (without the leading 'v') to set the version of the packages|True||
 |**releaseNotes**|Release notes to be added in the generated .nupkg files|False||
 |**projectUrl**|Project URL for the generated package. Usually associated with the Automation Hub project. If not provided, the repository URL will be used|||
+|**traceLevel**|Trace level for the packing process. Possible values: Verbose, Information, Warning, Error|Information||
+|**author**|The package author. If not provided, the GitHub actor will be used.|github.actor||
 
 ## Outputs
 
