@@ -36,6 +36,10 @@ inputs:
   projectUrl:
     description: 'Project URL for the generated package. Usually associated with the Automation Hub project. If not provided, the repository URL will be used'
     required: false
+  traceLevel:
+    description: 'Trace level for the packing process. Possible values: Verbose, Information, Warning, Error'
+    default: "Information"
+    required: false
 outputs:
   packagesPath:
     description: 'Folder containing the generated packages'
@@ -92,7 +96,7 @@ runs:
             --repositoryBranch "${{ github.head_ref || github.ref_name }}" \
             --repositoryType git \
             --projectUrl "${{ steps.set-urls.outputs.projectUrl }}"  \
-            --traceLevel "Warning"
+            --traceLevel "${{ inputs.traceLevel }}"
 
           echo "::endgroup::"
 
