@@ -83,7 +83,7 @@ runs:
 
         while IFS= read -r p; do
           echo "::group::uipcli output for packing project: $p"
-          uipcli package pack "$p" \
+          if ! packResult=$(uipcli package pack "$p" \
             --output "$packages" \
             --libraryOrchestratorUrl "${{ inputs.orchestratorUrl }}" \
             --libraryOrchestratorTenant "${{ inputs.orchestratorTenant }}" \
@@ -101,14 +101,14 @@ runs:
             --repositoryType git \
             --projectUrl "${{ steps.set-urls.outputs.projectUrl }}"  \
             --traceLevel "${{ inputs.traceLevel }}" \
-            --author "${{ inputs.author }}"
-
-          echo "::endgroup::"
-
-          if [ $? -ne 0 ]; then
+            --author "${{ inputs.author }}" 2>&1); then
             echo "Pack Failed"
+            echo "uipcli output: $packResult"
+            echo "::endgroup::"
             exit 1
           fi
+          echo "Pack Succeeded: $packResult"
+          echo "::endgroup::"
         done <<< "$projectJsonFiles"
 
     - id: step-summary
