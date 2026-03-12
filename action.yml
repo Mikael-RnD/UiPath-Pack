@@ -49,7 +49,7 @@ outputs:
     description: 'Folder containing the generated packages'
     value: ${{ steps.pack.outputs.packagesPath }}
   packageNames:
-    description: 'Comma-separated list of generated package names'
+    description: 'JSON array of generated package names, for use with fromJson() in subsequent matrix jobs'
     value: ${{ steps.step-summary.outputs.packageNames }}
 
 runs:
@@ -145,12 +145,12 @@ runs:
         done < <(find "${{ steps.pack.outputs.packagesPath }}" -type f -name "*.nupkg" -print0)
 
         if [ ${#packageNames[@]} -gt 0 ]; then
-          packageNamesCsv=$(IFS=,; echo "${packageNames[*]}")
+          packageNamesJson=$(printf '%s\n' "${packageNames[@]}" | jq -R . | jq -s -c .)
         else
-          packageNamesCsv=""
+          packageNamesJson="[]"
         fi
 
-        echo "packageNames=$packageNamesCsv" >> $GITHUB_OUTPUT
+        echo "packageNames=$packageNamesJson" >> $GITHUB_OUTPUT
 
 
 
