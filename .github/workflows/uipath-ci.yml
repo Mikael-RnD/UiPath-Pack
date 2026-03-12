@@ -97,6 +97,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
+        tenant: [ TEST, PROD ]
         packageName: ${{ fromJson(needs.pack-with-multi-file-input.outputs.packageNames) }}
     steps:
       - run: echo "This job can now use the package name ${{ matrix.packageName }} to perform further steps, such as deployment or testing."
