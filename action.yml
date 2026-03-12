@@ -49,12 +49,23 @@ outputs:
     description: 'Folder containing the generated packages'
     value: ${{ steps.pack.outputs.packagesPath }}
   packageNames:
-    description: 'Comma-separated list of generated package file names'
+    description: 'Comma-separated list of generated package names'
     value: ${{ steps.step-summary.outputs.packageNames }}
 
 runs:
   using: "composite"
   steps:
+    - id: sanitize-version
+      name: Sanitize version
+      shell: bash
+      run: |
+        # Remove leading 'v' if present in version (e.g., v1.0.0 -> 1.0.0)
+        sanitizedVersion="${{ inputs.projectVersion }}"
+        if [[ "$sanitizedVersion" == v* ]]; then
+          sanitizedVersion="${sanitizedVersion:1}"
+        fi
+        echo "projectVersion=$sanitizedVersion" >> $GITHUB_OUTPUT
+
     - id: set-urls
       name: Set URLs
       shell: bash
@@ -96,7 +107,7 @@ runs:
             --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" \
             --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" \
             --releaseNotes "${{ inputs.releaseNotes }}" \
-            --version "${{ inputs.projectVersion }}" \
+            --version "${{ steps.sanitize-version.outputs.projectVersion }}" \
             -l en-US \
             --repositoryUrl "${{ steps.set-urls.outputs.repoUrl }}"  \
             --repositoryCommit "${{ github.sha }}" \
@@ -123,9 +134,14 @@ runs:
 
         packageNames=()
         while IFS= read -r -d '' package; do
-          packageName=$(basename "$package")
+          packageFileName=$(basename "$package")
+          packageName="${packageFileName%.nupkg}"
+          versionSuffix=".${{ steps.sanitize-version.outputs.projectVersion }}"
+          if [[ "$packageName" == *"$versionSuffix" ]]; then
+            packageName="${packageName%$versionSuffix}"
+          fi
           packageNames+=("$packageName")
-          echo "📦 $packageName" >> $GITHUB_STEP_SUMMARY
+          echo "📦 $packageFileName" >> $GITHUB_STEP_SUMMARY
         done < <(find "${{ steps.pack.outputs.packagesPath }}" -type f -name "*.nupkg" -print0)
 
         if [ ${#packageNames[@]} -gt 0 ]; then
