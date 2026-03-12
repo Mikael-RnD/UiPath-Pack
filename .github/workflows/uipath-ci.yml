@@ -44,6 +44,8 @@ jobs:
           projectVersion: '1.0.0'
           releaseNotes: 'Initial release'
 
+      - run: echo "Generated packages ${{ steps.pack.outputs.packageNames }}"
+
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v6
         with:
@@ -54,6 +56,8 @@ jobs:
 
   pack-with-multi-file-input:
     runs-on: windows-latest
+    outputs:
+      packageNames: ${{ steps.pack.outputs.packageNames }}
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v6
@@ -78,6 +82,8 @@ jobs:
           projectVersion: '1.0.0'
           releaseNotes: 'Initial release with file input'
 
+      - run: echo "Generated packages ${{ steps.pack.outputs.packageNames }}"    
+
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v6
         with:
@@ -85,6 +91,16 @@ jobs:
           path: ${{ steps.pack.outputs.packagesPath }}
           if-no-files-found: error
           retention-days: 90
+
+  matrix-example-job:
+    needs: pack-with-multi-file-input
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        tenant: [ TEST, PROD ]
+        packageName: ${{ fromJson(needs.pack-with-multi-file-input.outputs.packageNames) }}
+    steps:
+      - run: echo "This job can now use the package name ${{ matrix.packageName }} to perform further steps, such as deployment or testing."
 
   pack-with-ubuntu:
     runs-on: ubuntu-latest
@@ -113,8 +129,10 @@ jobs:
           orchestratorApplicationSecret: ${{ secrets.UIPATH_APP_SECRET }}
           orchestratorApplicationScope: ${{ secrets.UIPATH_APP_SCOPE }}
           orchestratorLogicalName: ${{ secrets.UIPATH_ORGANIZATION_ID }}
-          projectVersion: '1.0.0'
+          projectVersion: 'v1.0.0'
           releaseNotes: 'Initial release with file input'
+
+      - run: echo "Generated packages ${{ steps.pack.outputs.packageNames }}"
 
       # Upload packages as build artifacts to be handled by deploy job
       - uses: actions/upload-artifact@v4

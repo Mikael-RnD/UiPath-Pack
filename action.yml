@@ -48,10 +48,24 @@ outputs:
   packagesPath:
     description: 'Folder containing the generated packages'
     value: ${{ steps.pack.outputs.packagesPath }}
+  packageNames:
+    description: 'JSON array of generated package names, for use with fromJson() in subsequent matrix jobs'
+    value: ${{ steps.step-summary.outputs.packageNames }}
 
 runs:
   using: "composite"
   steps:
+    - id: sanitize-version
+      name: Sanitize version
+      shell: bash
+      run: |
+        # Remove leading 'v' if present in version (e.g., v1.0.0 -> 1.0.0)
+        sanitizedVersion="${{ inputs.projectVersion }}"
+        if [[ "$sanitizedVersion" == v* ]]; then
+          sanitizedVersion="${sanitizedVersion:1}"
+        fi
+        echo "projectVersion=$sanitizedVersion" >> $GITHUB_OUTPUT
+
     - id: set-urls
       name: Set URLs
       shell: bash
@@ -83,7 +97,7 @@ runs:
 
         while IFS= read -r p; do
           echo "::group::uipcli output for packing project: $p"
-          uipcli package pack "$p" \
+          if ! packResult=$(uipcli package pack "$p" \
             --output "$packages" \
             --libraryOrchestratorUrl "${{ inputs.orchestratorUrl }}" \
             --libraryOrchestratorTenant "${{ inputs.orchestratorTenant }}" \
@@ -93,7 +107,7 @@ runs:
             --libraryOrchestratorApplicationScope "${{ inputs.orchestratorApplicationScope }}" \
             --libraryOrchestratorFolder "${{ inputs.orchestratorFolder }}" \
             --releaseNotes "${{ inputs.releaseNotes }}" \
-            --version "${{ inputs.projectVersion }}" \
+            --version "${{ steps.sanitize-version.outputs.projectVersion }}" \
             -l en-US \
             --repositoryUrl "${{ steps.set-urls.outputs.repoUrl }}"  \
             --repositoryCommit "${{ github.sha }}" \
@@ -101,14 +115,14 @@ runs:
             --repositoryType git \
             --projectUrl "${{ steps.set-urls.outputs.projectUrl }}"  \
             --traceLevel "${{ inputs.traceLevel }}" \
-            --author "${{ inputs.author }}"
-
-          echo "::endgroup::"
-
-          if [ $? -ne 0 ]; then
+            --author "${{ inputs.author }}" 2>&1); then
             echo "Pack Failed"
+            echo "uipcli output: $packResult"
+            echo "::endgroup::"
             exit 1
           fi
+          echo "Pack Succeeded: $packResult"
+          echo "::endgroup::"
         done <<< "$projectJsonFiles"
 
     - id: step-summary
@@ -118,10 +132,25 @@ runs:
       run: |
         echo "### Generated packages: " >> $GITHUB_STEP_SUMMARY
 
-        packages=$(find "${{ steps.pack.outputs.packagesPath }}" -type f -name "*.nupkg")
-        for package in $packages; do
-          echo ":package: $(basename "$package")" >> $GITHUB_STEP_SUMMARY
-        done
+        packageNames=()
+        while IFS= read -r -d '' package; do
+          packageFileName=$(basename "$package")
+          packageName="${packageFileName%.nupkg}"
+          versionSuffix=".${{ steps.sanitize-version.outputs.projectVersion }}"
+          if [[ "$packageName" == *"$versionSuffix" ]]; then
+            packageName="${packageName%$versionSuffix}"
+          fi
+          packageNames+=("$packageName")
+          echo "📦 $packageFileName" >> $GITHUB_STEP_SUMMARY
+        done < <(find "${{ steps.pack.outputs.packagesPath }}" -type f -name "*.nupkg" -print0)
+
+        if [ ${#packageNames[@]} -gt 0 ]; then
+          packageNamesJson=$(printf '%s\n' "${packageNames[@]}" | jq -R . | jq -s -c .)
+        else
+          packageNamesJson="[]"
+        fi
+
+        echo "packageNames=$packageNamesJson" >> $GITHUB_OUTPUT
 
 
 
