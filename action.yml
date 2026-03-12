@@ -48,6 +48,9 @@ outputs:
   packagesPath:
     description: 'Folder containing the generated packages'
     value: ${{ steps.pack.outputs.packagesPath }}
+  packageNames:
+    description: 'Comma-separated list of generated package file names'
+    value: ${{ steps.step-summary.outputs.packageNames }}
 
 runs:
   using: "composite"
@@ -118,10 +121,20 @@ runs:
       run: |
         echo "### Generated packages: " >> $GITHUB_STEP_SUMMARY
 
-        packages=$(find "${{ steps.pack.outputs.packagesPath }}" -type f -name "*.nupkg")
-        for package in $packages; do
-          echo ":package: $(basename "$package")" >> $GITHUB_STEP_SUMMARY
-        done
+        packageNames=()
+        while IFS= read -r -d '' package; do
+          packageName=$(basename "$package")
+          packageNames+=("$packageName")
+          echo "📦 $packageName" >> $GITHUB_STEP_SUMMARY
+        done < <(find "${{ steps.pack.outputs.packagesPath }}" -type f -name "*.nupkg" -print0)
+
+        if [ ${#packageNames[@]} -gt 0 ]; then
+          packageNamesCsv=$(IFS=,; echo "${packageNames[*]}")
+        else
+          packageNamesCsv=""
+        fi
+
+        echo "packageNames=$packageNamesCsv" >> $GITHUB_OUTPUT
 
 
 
