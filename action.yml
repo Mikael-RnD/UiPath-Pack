@@ -2,7 +2,7 @@ name: UiPath Pack
 description: 'Packs all UiPath projects within a repository into .nupkg packages for deployment by other actions. Optional behavior: Pack specified paths only'
 inputs:
   projectFilePaths:
-    description: 'Relative paths to projecct.json files. Used for passing explicit paths to project files to perform analysis. Can be used as multi-line inputs'
+    description: 'Relative paths to projecct.json files. Used for passing explicit paths to project files pack. Can be used as multi-line inputs'
     required: false
   orchestratorUrl: 
     description: 'Orchestrator instance URL'
